@@ -1,0 +1,4 @@
+#ignore node_modules directory
+/node_modules
+#gnore config directory
+/config
