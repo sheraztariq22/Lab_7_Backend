@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const User = require("../models/taskModel.js");
+dotenv.config();
 
 router.post("/register", async (req, res) => {
   try {
@@ -54,10 +55,15 @@ router.post("/login", async (req, res) => {
       },
     };
 
-    jwt.sign(payload, config.jwtSecret, { expiresIn: "1h" }, (err, token) => {
-      if (err) throw err;
-      res.json({ token });
-    });
+    jwt.sign(
+      payload,
+      process.env.jwtSecret,
+      { expiresIn: "1h" },
+      (err, token) => {
+        if (err) throw err;
+        res.json({ token });
+      }
+    );
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
