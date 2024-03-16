@@ -1,10 +1,22 @@
 const express = require("express");
 const router = express.Router();
-const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const User = require("../models/taskModel.js");
 dotenv.config();
+
+function simpleHash(password) {
+  let hash = 0,
+    i,
+    chr;
+  if (password.length === 0) return hash;
+  for (i = 0; i < password.length; i++) {
+    chr = password.charCodeAt(i);
+    hash = (hash << 5) - hash + chr;
+    hash |= 0;
+  }
+  return hash.toString();
+}
 
 router.post("/register", async (req, res) => {
   try {
@@ -15,13 +27,13 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ msg: "Username already exists" });
     }
 
+    // Hash the password
+    const hashedPassword = simpleHash(password);
+
     user = new User({
       username,
-      password,
+      password: hashedPassword,
     });
-
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(password, salt);
 
     await user.save();
 
@@ -36,19 +48,17 @@ router.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    // Check if user exists
     const user = await User.findOne({ username });
     if (!user) {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
 
-    // Validate password
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
+    const hashedPassword = simpleHash(password);
+
+    if (user.password !== hashedPassword) {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
 
-    // Create JWT token
     const payload = {
       user: {
         id: user.id,
