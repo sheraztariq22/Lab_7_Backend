@@ -2,3 +2,6 @@
 /node_modules
 #gnore config directory
 /config
+
+#ignore the .env
+.env

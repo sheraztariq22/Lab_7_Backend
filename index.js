@@ -3,14 +3,15 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const authRoutes = require("./routes/authRoutes");
 const taskRoutes = require("./routes/authRoutes");
-const config = require("./config/config.js");
+const dotenv = require("dotenv");
+dotenv.config();
 
 const app = express();
 
 app.use(bodyParser.json());
 
 mongoose
-  .connect(config.mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(process.env.mongoURI, {})
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("MongoDB connection error:", err));
 

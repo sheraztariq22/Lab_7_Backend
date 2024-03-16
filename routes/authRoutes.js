@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const config = require("../config/config.js");
+const dotenv = require("dotenv");
 const User = require("../models/taskModel.js");
 
 router.post("/register", async (req, res) => {
